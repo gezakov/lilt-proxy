@@ -1,0 +1,161 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="googlebut" onclick="changeto('google')">Google</button>
+    <button id="lingueebut" onclick="changeto('linguee')">Linguee</button>
+    <button id="googtransbut" onclick="changeto('googtrans')">Google Translate</button>
+    <button id="bingbut" onclick="changeto('bing')">Bing Translate</button>
+    <button id="deeplbut" onclick="changeto('deepl')">DeepL</button>
+    <button id="sogoubut" onclick="changeto('sogou')">Sogou Translate</button>
+<!--     <button id="baidubut" onclick="changeto('baidu')">Baidu Translate</button>
+    <button id="naverbut" onclick="changeto('naver')">Naver Translate</button> -->
+
+
+    <input id="searchquery" onkeydown="keydownpressed(event)" type="text" />
+    <button onclick="searchclicked()">search</button>
+
+
+
+<!--     <input id="googlerad" type="radio" name="searchengine" value="google" checked="true">
+    <label for="googlerad">Google</label>
+    <input id="lingueerad" type="radio" name="searchengine" value="linguee">
+    <label for="lingueerad">Linguee</label>
+    <input id="googtransrad" type="radio" name="searchengine" value="googtrans">
+    <label for="googtransrad">Google Translate</label>
+    <input id="sogoutransrad" type="radio" name="searchengine" value="sogoutrans">
+    <label for="sogoutransrad">Sogou Translate</label> -->
+    <!-- <input type="radio" name="searchengine" value="navertrans">
+    <label for="navertrans">Naver Translate</label> -->
+
+    <span style="margin-left: 30px">Current URL:</span>
+    <span id="currenturl"></span>
+    <span style="margin-left: 30px">Keys typed so far:</span>
+    <span id="currentkeys"></span>
+
+    <br /><br />
+    <iframe id="mainiframe" width="100%" height="800" style="width: 100%; height: 800px; border: none; margin: 0px; padding: 0px;"></iframe>
+    <!-- <iframe id='linguee' src="http://localhost:3336/" width="620" height="800" style="width: 620px; height: 800px;"></iframe> -->
+
+    <!-- <iframe id='deepl' src="http://localhost:3333/translator" width="620" height="800" style="width: 620px; height: 800px;"></iframe> -->
+    <!-- <iframe id='googtrans' src="http://localhost:3334/" width="620" height="800" style="width: 620px; height: 800px;"></iframe> -->
+<!--     <iframe src="https://deepl.com/translator" width="800" height="800" style="width: 800px; height: 800px;"></iframe>
+    <iframe src="https://translate.google.com/" width="800" height="800" style="width: 800px; height: 800px;"></iframe>
+    <iframe src="https://translate.bing.com/" width="800" height="800" style="width: 800px; height: 800px;"></iframe>
+    <iframe src="https://fanyi.baidu.com/" width="800" height="800" style="width: 800px; height: 800px;"></iframe>
+    <iframe src="https://fanyi.sogou.com/" width="800" height="800" style="width: 800px; height: 800px;"></iframe>
+    <iframe src="https://papago.naver.com/" width="800" height="800" style="width: 800px; height: 800px;"></iframe>
+    <iframe src="http://localhost:3333/papago" width="800" height="800" style="width: 800px; height: 800px;"></iframe>
+     -->
+<script>
+
+var search_engine_name_to_port = {
+    'google': 3333,
+    'googtrans': 3334,
+    'deepl': 3340,
+    'linguee': 3336,
+    'sogou': 3337,
+    'baidu': 3338,
+    'naver': 3339,
+    'bing': 3341,
+}
+
+var portnum_to_search_engine_name = {}
+
+for (var [search_engine_name, portnum] of Object.entries(search_engine_name_to_port)) {
+    portnum_to_search_engine_name[portnum] = search_engine_name;
+}
+
+
+function changeto(search_engine) {
+  var port = search_engine_name_to_port[search_engine];
+  window.location.href = 'http://localhost:' + port + '/public/proxy.html';
+}
+function keydownpressed(evt) {
+  if (evt.keyCode === 13) {
+      // enter pressed
+      searchclicked()
+  }
+}
+
+function get_search_engine() {
+    var portnum = parseInt(window.location.port);
+    var servicename = portnum_to_search_engine_name[portnum];
+    return servicename
+}
+
+// function get_search_engine() {
+//     for (var x of document.getElementsByName('searchengine')) {if (x.checked) {return x.value }}
+// }
+
+function searchclicked() {
+    var searchengine = get_search_engine();
+    var searchquery = document.querySelector('#searchquery').value;
+    var url = '';
+    if (searchengine === 'google') {
+        url = '/search?q=' + searchquery;
+    } else if (searchengine === 'linguee') {
+        url = '/english-chinese/search?source=auto&query=' + searchquery;
+    } else if (searchengine === 'googtrans') {
+        url = '/?sl=en&tl=zh-CN&text=' + searchquery + '%20&op=translate';
+    } else if (searchengine === 'sogou') {
+        url = '/text?keyword=' + searchquery + '&transfrom=auto&transto=zh-CHS&model=general';
+    } else if (searchengine === 'baidu') {
+        url = '/#en/zh/' + searchquery;
+    } else if (searchengine === 'naver') {
+        url = '/?sk=auto&tk=ko&hn=0&st=' + searchquery;
+    } else if (searchengine === 'deepl') {
+        url = '/translator#en/zh/' + searchquery;
+    } else if (searchengine === 'bing') {
+        url = '/translator?from=en&to=fr&text=' + searchquery;
+    } else {
+        alert('unknown search engine: ' + searchengine)
+    }
+    document.querySelector('#mainiframe').setAttribute('src', url);
+}
+
+setTimeout(function() {
+    var servicename = get_search_engine();
+    document.querySelector('#' + servicename + 'but').style.backgroundColor = 'lightgreen';
+    var iframe = document.querySelector('#mainiframe');
+    var iframe_url = '/';
+    if (servicename === 'bing') {
+        iframe_url = '/translator';
+    }
+    iframe.setAttribute('src', iframe_url);
+}, 100)
+
+setInterval(function() {
+    try {
+      var iframe = document.querySelector('#mainiframe');
+      if (iframe.contentWindow.window.document.body.alreadyinjectedcode) {
+        return
+      }
+      iframe.contentWindow.window.document.body.alreadyinjectedcode = true;
+      var c = document.createElement('div');
+      c.style.position = 'fixed';
+      c.style.backgroundColor = 'green';
+      c.style.color = 'white';
+      c.innerText = 'Activity on this page is being tracked by Lilt';
+      c.style.zIndex = 999999999999;
+      c.style.left = '800px';
+      c.style.top = '0px';
+      c.style.padding = '10px';
+      c.style.borderRadius = '10px 10px 10px 10px';
+      iframe.contentWindow.window.document.body.appendChild(c);
+      //iframe.contentWindow.window.document.body.style.backgroundColor = 'lightblue';
+      document.querySelector('#currenturl').innerText = iframe.contentWindow.window.document.location.href;
+      iframe.contentWindow.window.document.body.addEventListener('keydown', function(evt) {
+        document.querySelector('#currentkeys').innerText = document.querySelector('#currentkeys').innerText + evt.key;
+      })
+    } catch {
+    }
+    //console.log("page has focus:" + document.hasFocus());
+}, 1000)
+</script>
+</body>
+</html>
