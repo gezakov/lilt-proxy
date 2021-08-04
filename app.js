@@ -51,6 +51,7 @@ var servers_to_proxy = [
   ['https://papago.naver.com/', 3339],
   ['https://www.deepl.com/', 3340],
   ['https://www.bing.com/', 3341],
+  ['https://translate.yandex.com/', 3342],
 ];
 
 for (var [upstream_url, target_port] of servers_to_proxy) {
@@ -61,12 +62,12 @@ for (var [upstream_url, target_port] of servers_to_proxy) {
     //upstream: 'https://www.deepl.com/translator',
     prefix: '/', // optional
     http2: false, // optional
-    //replyOptions: {
+    replyOptions: {
     //  rewriteHeaders: (headers) => ({...headers, 'Access-Control-Allow-Methods': 'GET, HEAD', 'Access-Control-Allow-Origin': '*'}),
-      //rewriteHeaders: (headers) => ({...headers, 'Access-Control-Allow-Methods': 'GET, HEAD', 'Access-Control-Allow-Origin': '*', 'X-Frame-Options': 'allow-from http://localhost:3333/'}),
+      rewriteHeaders: (headers) => ({...headers, 'Access-Control-Allow-Methods': 'GET, HEAD', 'Access-Control-Allow-Origin': '*', 'X-Frame-Options': 'allow-from http://localhost:8880/'}),
     //  rewriteRequestHeaders: (originalReq, headers) => ({...headers, 'Access-Control-Allow-Methods': 'GET, HEAD', 'Access-Control-Allow-Origin': '*'}),
       //rewriteRequestHeaders: (originalReq, headers) => ({...headers, 'Access-Control-Allow-Methods': 'GET, HEAD', 'Access-Control-Allow-Origin': '*', 'X-Frame-Options': 'allow-from http://localhost:3333/'})
-    //}
+    }
   });
 
   server_to_proxy.register(require('fastify-static'), {

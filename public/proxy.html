@@ -12,6 +12,7 @@
     <button id="bingbut" onclick="changeto('bing')">Bing Translate</button>
     <button id="deeplbut" onclick="changeto('deepl')">DeepL</button>
     <button id="sogoubut" onclick="changeto('sogou')">Sogou Translate</button>
+    <!-- <button id="yandexbut" onclick="changeto('yandex')">Yandex Translate</button> -->
 <!--     <button id="baidubut" onclick="changeto('baidu')">Baidu Translate</button>
     <button id="naverbut" onclick="changeto('naver')">Naver Translate</button> -->
 
@@ -62,6 +63,7 @@ var port_to_server_path = {
   3339: 'https://papago.naver.com/',
   3340: 'https://www.deepl.com/',
   3341: 'https://www.bing.com/',
+  3342: 'https://translate.yandex.com/',
 };
 
 var search_engine_name_to_port = {
@@ -73,6 +75,7 @@ var search_engine_name_to_port = {
     'baidu': 3338,
     'naver': 3339,
     'bing': 3341,
+    'yandex': 3342,
 }
 
 var portnum_to_search_engine_name = {}
@@ -123,6 +126,8 @@ function searchclicked() {
         url = '/translator#en/zh/' + searchquery;
     } else if (searchengine === 'bing') {
         url = '/translator?from=en&to=fr&text=' + searchquery;
+    } else if (searchengine === 'yandex') {
+        url = '/?lang=en-ru&text=' + searchquery;
     } else {
         alert('unknown search engine: ' + searchengine)
     }
@@ -151,9 +156,10 @@ setInterval(function() {
       c.style.position = 'fixed';
       c.style.backgroundColor = 'green';
       c.style.color = 'white';
+      c.style.opacity = 0.5;
       c.innerText = 'Activity on this page is being tracked by Lilt';
       c.style.zIndex = 999999999999;
-      c.style.left = '800px';
+      c.style.left = '20px';
       c.style.top = '0px';
       c.style.padding = '10px';
       c.style.borderRadius = '10px 10px 10px 10px';
