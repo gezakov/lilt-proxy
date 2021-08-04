@@ -53,6 +53,17 @@
      -->
 <script>
 
+var port_to_server_path = {
+  3334: 'https://translate.google.com/',
+  3333: 'https://www.google.com/',
+  3336: 'https://www.linguee.com/',
+  3337: 'https://fanyi.sogou.com/',
+  3338: 'https://fanyi.baidu.com/',
+  3339: 'https://papago.naver.com/',
+  3340: 'https://www.deepl.com/',
+  3341: 'https://www.bing.com/',
+};
+
 var search_engine_name_to_port = {
     'google': 3333,
     'googtrans': 3334,
@@ -148,7 +159,15 @@ setInterval(function() {
       c.style.borderRadius = '10px 10px 10px 10px';
       iframe.contentWindow.window.document.body.appendChild(c);
       //iframe.contentWindow.window.document.body.style.backgroundColor = 'lightblue';
-      document.querySelector('#currenturl').innerText = iframe.contentWindow.window.document.location.href;
+      var iframe_url = iframe.contentWindow.window.document.location.href;
+      console.log('iframe_url is')
+      console.log(iframe_url)
+      if (iframe.contentWindow.window.document.location.hostname === 'localhost') {
+        var portnum = parseInt(window.location.port);
+        var server_name = port_to_server_path[portnum];
+        iframe_url = iframe.contentWindow.window.document.location.href.replace('http://localhost:' + portnum + '/', server_name);
+      }
+      document.querySelector('#currenturl').innerText =  iframe_url;
       iframe.contentWindow.window.document.body.addEventListener('keydown', function(evt) {
         document.querySelector('#currentkeys').innerText = document.querySelector('#currentkeys').innerText + evt.key;
       })
