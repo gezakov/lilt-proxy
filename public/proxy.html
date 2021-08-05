@@ -33,10 +33,10 @@
     <!-- <input type="radio" name="searchengine" value="navertrans">
     <label for="navertrans">Naver Translate</label> -->
 
-    <span style="margin-left: 30px">Current URL:</span>
-    <span id="currenturl"></span>
-    <span style="margin-left: 30px">Keys typed so far:</span>
-    <span id="currentkeys"></span>
+    <span style="margin-left: 30px; display: none">Current URL:</span>
+    <span id="currenturl" style="display: none"></span>
+    <span style="margin-left: 30px; display: none">Keys typed so far:</span>
+    <span id="currentkeys" style="display: none"></span>
 
     <br /><br />
     <iframe id="mainiframe" width="100%" height="800" style="width: 100%; height: 800px; border: none; margin: 0px; padding: 0px;"></iframe>
@@ -84,6 +84,31 @@ for (var [search_engine_name, portnum] of Object.entries(search_engine_name_to_p
     portnum_to_search_engine_name[portnum] = search_engine_name;
 }
 
+function search_for_word_norefresh(word) {
+    try {
+        var iframe = document.querySelector('#mainiframe');
+        var body = iframe.contentWindow.window.document.body;
+        var inputs = body.querySelectorAll('input[type="text"]');
+        if (inputs.length === 1) {
+            var input = inputs[0];
+            input.value = word;
+            input.form.submit();
+            return true;
+        }
+    } catch {
+
+    }
+    return false;
+
+}
+
+function search_for_word(word) {
+    if (!search_for_word_norefresh(word)) {
+        var url = get_search_url(word);
+        document.querySelector('#mainiframe').setAttribute('src', url);
+    }
+    document.querySelector('#searchquery').value = word;
+}
 
 function changeto(search_engine) {
   var port = search_engine_name_to_port[search_engine];
@@ -106,10 +131,9 @@ function get_search_engine() {
 //     for (var x of document.getElementsByName('searchengine')) {if (x.checked) {return x.value }}
 // }
 
-function searchclicked() {
+function get_search_url(searchquery) {
+    var url = ''
     var searchengine = get_search_engine();
-    var searchquery = document.querySelector('#searchquery').value;
-    var url = '';
     if (searchengine === 'google') {
         url = '/search?q=' + searchquery;
     } else if (searchengine === 'linguee') {
@@ -131,8 +155,24 @@ function searchclicked() {
     } else {
         alert('unknown search engine: ' + searchengine)
     }
+    return url;
+}
+
+function searchclicked() {
+    var searchquery = document.querySelector('#searchquery').value;
+    var url = get_search_url(searchquery);
     document.querySelector('#mainiframe').setAttribute('src', url);
 }
+
+window.addEventListener('hashchange', function() {
+    var newhash = window.location.hash;
+    if (newhash[0] === '#') {
+        newhash = newhash.substr(1);
+    }
+    if (newhash.length > 0) {
+        search_for_word(newhash);
+    }
+});
 
 setTimeout(function() {
     var servicename = get_search_engine();
