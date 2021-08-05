@@ -84,6 +84,11 @@ for (var [search_engine_name, portnum] of Object.entries(search_engine_name_to_p
     portnum_to_search_engine_name[portnum] = search_engine_name;
 }
 
+window.addEventListener("message", function(evt) {
+    var word = JSON.parse(evt.data).word;
+    search_for_word(word);
+});
+
 function search_for_word_norefresh(word) {
     try {
         var iframe = document.querySelector('#mainiframe');
@@ -137,21 +142,21 @@ function get_search_url(searchquery) {
     if (searchengine === 'google') {
         url = '/search?q=' + searchquery;
     } else if (searchengine === 'linguee') {
-        url = '/english-chinese/search?source=auto&query=' + searchquery;
+        url = '/spanish-english/search?source=auto&query=' + searchquery;
     } else if (searchengine === 'googtrans') {
-        url = '/?sl=en&tl=zh-CN&text=' + searchquery + '%20&op=translate';
+        url = '/?sl=es&tl=en&text=' + searchquery + '%20&op=translate';
     } else if (searchengine === 'sogou') {
-        url = '/text?keyword=' + searchquery + '&transfrom=auto&transto=zh-CHS&model=general';
+        url = '/text?keyword=' + searchquery + '&transfrom=auto&transto=en&model=general';
     } else if (searchengine === 'baidu') {
-        url = '/#en/zh/' + searchquery;
+        url = '/#es/en/' + searchquery;
     } else if (searchengine === 'naver') {
-        url = '/?sk=auto&tk=ko&hn=0&st=' + searchquery;
+        url = '/?sk=auto&tk=en&hn=0&st=' + searchquery;
     } else if (searchengine === 'deepl') {
-        url = '/translator#en/zh/' + searchquery;
+        url = '/translator#es/en/' + searchquery;
     } else if (searchengine === 'bing') {
-        url = '/translator?from=en&to=fr&text=' + searchquery;
+        url = '/translator?from=es&to=en&text=' + searchquery;
     } else if (searchengine === 'yandex') {
-        url = '/?lang=en-ru&text=' + searchquery;
+        url = '/?lang=es-en&text=' + searchquery;
     } else {
         alert('unknown search engine: ' + searchengine)
     }
@@ -164,15 +169,15 @@ function searchclicked() {
     document.querySelector('#mainiframe').setAttribute('src', url);
 }
 
-window.addEventListener('hashchange', function() {
-    var newhash = window.location.hash;
-    if (newhash[0] === '#') {
-        newhash = newhash.substr(1);
-    }
-    if (newhash.length > 0) {
-        search_for_word(newhash);
-    }
-});
+// window.addEventListener('hashchange', function() {
+//     var newhash = window.location.hash;
+//     if (newhash[0] === '#') {
+//         newhash = newhash.substr(1);
+//     }
+//     if (newhash.length > 0) {
+//         search_for_word(newhash);
+//     }
+// });
 
 setTimeout(function() {
     var servicename = get_search_engine();
